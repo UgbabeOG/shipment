@@ -8,7 +8,9 @@ export default function PackageTracker() {
   const [password, setPassword] = useState('');
   const [trackingId, setTrackingId] = useState('');
   const [activeTracking, setActiveTracking] = useState(null);
+  const [page, setPage] = useState('landing');
   const [loginError, setLoginError] = useState('');
+  const [trackingError, setTrackingError] = useState('');
 
   // Mock package data
   const mockPackages = {
@@ -81,12 +83,19 @@ export default function PackageTracker() {
   const handleTrack = (e) => {
     e.preventDefault();
     const id = trackingId.trim().toUpperCase();
-    
+    setTrackingError('');
+
+    if (!id) {
+      setTrackingError('Enter a valid tracking ID.');
+      return;
+    }
+
     if (mockPackages[id]) {
       setActiveTracking(mockPackages[id]);
       setTrackingId('');
+      setPage('landing');
     } else {
-      alert('Package not found. Try: DHL1234567890, FDX9876543210, or UPS5555666677');
+      setTrackingError('Package not found. Try a valid tracking ID.');
     }
   };
 
@@ -94,6 +103,9 @@ export default function PackageTracker() {
     setIsLoggedIn(false);
     setActiveTracking(null);
     setTrackingId('');
+    setPage('landing');
+    setLoginError('');
+    setTrackingError('');
   };
 
   const getStatusColor = (status) => {
@@ -116,6 +128,122 @@ export default function PackageTracker() {
     if (status === 'In Transit') return 'text-amber-500 bg-amber-50';
     return 'text-slate-500 bg-slate-50';
   };
+
+  if (!isLoggedIn && page === 'landing') {
+    return (
+      <div className="min-h-screen relative overflow-hidden bg-slate-950 text-white">
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap');
+          
+          * {
+            font-family: 'Sora', sans-serif;
+          }
+
+          .hero-animate {
+            animation: heroFade 0.9s ease-out both;
+          }
+
+          @keyframes heroFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+          }
+        `}</style>
+
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
+          <div className="absolute right-0 top-24 h-96 w-96 rounded-full bg-cyan-400/20 blur-3xl" />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4 py-20">
+          <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-16">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-2xl">
+                <Package className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">TrackHub</p>
+                <h1 className="mt-2 text-4xl md:text-5xl font-bold text-white">Cinematic package visibility for every shipment.</h1>
+              </div>
+            </div>
+            <button
+              onClick={() => setPage('login')}
+              className="rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-white/20"
+            >
+              Sign In
+            </button>
+          </header>
+
+          <section className="grid gap-12 lg:grid-cols-[1.6fr_1fr] items-start">
+            <div className="space-y-6 hero-animate">
+              <p className="text-slate-300 max-w-xl text-lg">Visitors can track packages instantly with the right tracking ID. Sign in for dashboard controls and saved shipment history.</p>
+              <form onSubmit={handleTrack} className="grid gap-4 sm:grid-cols-[1fr_auto]">
+                <label htmlFor="landingTracking" className="sr-only">Tracking ID</label>
+                <input
+                  id="landingTracking"
+                  type="text"
+                  value={trackingId}
+                  onChange={(e) => setTrackingId(e.target.value)}
+                  placeholder="Enter tracking ID, e.g. DHL1234567890"
+                  className="w-full rounded-3xl border border-white/10 bg-slate-900/80 px-5 py-4 text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20"
+                />
+                <button
+                  type="submit"
+                  className="rounded-3xl bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-4 text-sm font-semibold text-white shadow-xl hover:opacity-95 transition"
+                >
+                  Track
+                </button>
+              </form>
+              {trackingError && <p className="text-sm text-rose-300">{trackingError}</p>}
+            </div>
+
+            <div className="rounded-[2rem] border border-white/10 bg-slate-900/80 p-8 shadow-2xl hero-animate">
+              <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Visitor tracking</p>
+              <h2 className="mt-4 text-2xl font-semibold text-white">No account required for package status.</h2>
+              <p className="mt-4 text-slate-300">Enter a valid tracking ID and watch shipment progress updates, location details, and delivery status immediately.</p>
+              <div className="mt-6 space-y-3">
+                <div className="rounded-3xl border border-white/5 bg-slate-950/70 p-4">
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Quick access</p>
+                  <p className="mt-2 text-white text-sm">Anyone with the correct details can track a package without signing in.</p>
+                </div>
+                <div className="rounded-3xl border border-white/5 bg-slate-950/70 p-4">
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Secure dashboard</p>
+                  <p className="mt-2 text-white text-sm">Signed-in users get full shipment management and history.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {activeTracking && (
+            <div className="mt-16 rounded-[2rem] border border-white/10 bg-slate-900/80 p-8 shadow-2xl hero-animate">
+              <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Current shipment</p>
+              <h3 className="mt-4 text-2xl font-semibold text-white">Status: {activeTracking.status}</h3>
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
+                  <p className="text-xs text-slate-400 uppercase tracking-[0.3em]">Tracking ID</p>
+                  <p className="mt-2 text-white font-semibold">{activeTracking.id}</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
+                  <p className="text-xs text-slate-400 uppercase tracking-[0.3em]">From / To</p>
+                  <p className="mt-2 text-white font-semibold">{activeTracking.from}</p>
+                  <p className="mt-1 text-slate-400">{activeTracking.to}</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
+                  <p className="text-xs text-slate-400 uppercase tracking-[0.3em]">Delivery</p>
+                  <p className="mt-2 text-white font-semibold">{activeTracking.estimatedDelivery}</p>
+                  <p className="text-slate-400 text-sm">{activeTracking.progressPercent}% complete</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
