@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, Package, MapPin, Clock, CheckCircle, AlertCircle, Eye, EyeOff, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { Package, MapPin, Clock, CheckCircle, AlertCircle, Eye, EyeOff, LogOut } from 'lucide-react';
 
 export default function PackageTracker() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -108,6 +108,13 @@ export default function PackageTracker() {
     if (status === 'Out for Delivery') return 'bg-blue-50 border-blue-200';
     if (status === 'In Transit') return 'bg-amber-50 border-amber-200';
     return 'bg-slate-50 border-slate-200';
+  };
+
+  const getStatusBadgeClasses = (status) => {
+    if (status === 'Delivered') return 'text-emerald-500 bg-emerald-50';
+    if (status === 'Out for Delivery') return 'text-blue-500 bg-blue-50';
+    if (status === 'In Transit') return 'text-amber-500 bg-amber-50';
+    return 'text-slate-500 bg-slate-50';
   };
 
   if (!isLoggedIn) {
@@ -475,7 +482,7 @@ export default function PackageTracker() {
                     <div className={`p-3 rounded-lg ${getStatusBgColor(pkg.status)} group-hover:shadow-md transition-all`}>
                       <Package className={`w-6 h-6 ${getStatusColor(pkg.status)}`} />
                     </div>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${getStatusColor(pkg.status)} bg-opacity-10 ${getStatusBgColor(pkg.status).replace('border', 'bg')}`}>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full bg-opacity-10 ${getStatusBadgeClasses(pkg.status)}`}>
                       {pkg.status}
                     </span>
                   </div>
