@@ -218,14 +218,6 @@ export default function PackageTracker() {
               </button>
             </form>
 
-            {/* Demo Note */}
-            <div className="mt-6 pt-6 border-t border-slate-600">
-              <p className="text-xs text-slate-400 text-center mb-3">Demo Credentials:</p>
-              <div className="space-y-2 text-xs text-slate-500">
-                <p>📧 <span className="text-slate-300">demo@example.com</span></p>
-                <p>🔑 <span className="text-slate-300">password (or anything 4+ chars)</span></p>
-              </div>
-            </div>
           </div>
 
           {/* Footer */}
